@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${spring-graphql-demo.order-service.base-url:Order service base url not set}")
+    @Value("${spring-graphql-demo.order-service.base-url}")
     private String orderServiceBaseUrl;
 
     @Bean

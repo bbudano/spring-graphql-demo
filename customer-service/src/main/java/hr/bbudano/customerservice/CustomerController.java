@@ -1,5 +1,6 @@
 package hr.bbudano.customerservice;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -11,22 +12,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Controller
+@RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerRepository customerRepository;
     private final WebClient webClient;
 
-    @Value("${spring-graphql-demo.order-service.base-url:order_service_base_url_not_set}")
-    private String orderServiceBaseUrl;
-
-    public CustomerController(CustomerRepository customerRepository, WebClient webClient) {
-        this.customerRepository = customerRepository;
-        this.webClient = webClient;
-    }
-
     @MutationMapping
     Mono<Customer> addCustomer(@Argument String name) {
-        return this.customerRepository.save(new Customer(null, name));
+        return this.customerRepository.save(new Customer(name));
     }
 
     @QueryMapping
@@ -44,15 +38,26 @@ public class CustomerController {
         return this.customerRepository.findById(id);
     }
 
+    @MutationMapping
+    Mono<Customer> updateCustomer(@Argument Integer id, @Argument String name) {
+        return this.customerRepository
+                .findById(id)
+                .flatMap(customer -> {
+                    customer.setName(name);
+                    return this.customerRepository.save(customer);
+                });
+    }
+
     @SchemaMapping(typeName = "Customer")
     Flux<Order> orders(Customer customer) {
         return webClient
                 .get()
-                .uri("/api/v1/orders?customerId=" + customer.id())
+                .uri("/api/v1/orders?customerId=" + customer.getId())
                 .retrieve()
                 .bodyToFlux(Order.class);
     }
 
 }
 
-record Order(Integer id, Integer customerId){}
+record Order(Integer id, Integer customerId) {
+}

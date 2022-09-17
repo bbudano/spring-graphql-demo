@@ -1,5 +1,20 @@
 package hr.bbudano.customerservice;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
-public record Customer(@Id Integer id, String name) { }
+@Data
+@NoArgsConstructor
+public class Customer {
+
+    @Id
+    private Integer id;
+
+    private String name;
+
+    public Customer(String name) {
+        this.name = name;
+    }
+
+}
