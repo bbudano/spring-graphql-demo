@@ -1,0 +1,21 @@
+package hr.bbudano.customerservice;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
+
+@Configuration
+public class WebClientConfig {
+
+    @Value("${spring-graphql-demo.order-service.base-url:Order service base url not set}")
+    private String orderServiceBaseUrl;
+
+    @Bean
+    WebClient webClient(WebClient.Builder builder) {
+        return builder
+                .baseUrl(orderServiceBaseUrl)
+                .build();
+    }
+
+}

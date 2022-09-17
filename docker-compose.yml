@@ -1,0 +1,36 @@
+version: '3.8'
+
+networks:
+  spring-graphql-demo:
+    name: spring-graphql-demo
+    driver: bridge
+
+services:
+
+  customer-service:
+    build: ./customer-service
+    image: customer-service
+    environment:
+      - SPRING_GRAPHQL_DEMO_ORDER_SERVICE_BASE_URL=http://order-service:8081
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 30s
+      timeout: 5s
+    restart: always
+    networks:
+      - spring-graphql-demo
+    ports:
+      - "8080:8080"
+
+  order-service:
+    build: ./order-service
+    image: order-service
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8081/actuator/health | grep UP || exit 1"
+      interval: 30s
+      timeout: 5s
+    restart: always
+    networks:
+      - spring-graphql-demo
+    ports:
+      - "8081:8081"
