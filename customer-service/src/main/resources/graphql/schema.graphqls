@@ -7,6 +7,7 @@ type Query {
 type Mutation {
     addCustomer(name: String): Customer
     updateCustomer(id: ID, name: String): Customer
+    deleteCustomer(id: ID): Int
 }
 
 type Customer {

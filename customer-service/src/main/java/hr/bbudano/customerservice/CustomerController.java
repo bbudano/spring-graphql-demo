@@ -1,7 +1,6 @@
 package hr.bbudano.customerservice;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -48,6 +47,15 @@ public class CustomerController {
                 });
     }
 
+    @MutationMapping
+    Mono<Integer> deleteCustomer(@Argument Integer id) {
+        return this.customerRepository
+                .findById(id)
+                .flatMap(customer -> this.customerRepository
+                        .delete(customer)
+                        .thenReturn(id));
+    }
+
     @SchemaMapping(typeName = "Customer")
     Flux<Order> orders(Customer customer) {
         return webClient
@@ -57,7 +65,4 @@ public class CustomerController {
                 .bodyToFlux(Order.class);
     }
 
-}
-
-record Order(Integer id, Integer customerId) {
 }
