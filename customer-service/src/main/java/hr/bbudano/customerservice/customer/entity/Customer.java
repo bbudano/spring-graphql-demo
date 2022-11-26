@@ -1,4 +1,4 @@
-package hr.bbudano.customerservice;
+package hr.bbudano.customerservice.customer.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
