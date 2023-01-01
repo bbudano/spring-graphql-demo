@@ -32,8 +32,8 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .anyExchange()
-                        .authenticated())
+                        .pathMatchers("/actuator/**").permitAll()
+                        .anyExchange().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .build();
     }
