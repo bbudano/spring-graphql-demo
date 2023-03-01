@@ -4,18 +4,18 @@ import hr.bbudano.customerservice.customer.entity.Customer;
 import hr.bbudano.customerservice.customer.service.CustomerService;
 import hr.bbudano.customerservice.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.BatchMapping;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 @RequiredArgsConstructor
@@ -77,6 +77,13 @@ public class CustomerController {
                             .collect(Collectors.toMap(customer -> customer,
                                     customer -> collect.get(customer.getId())));
                 });
+    }
+
+    @SubscriptionMapping
+    Flux<String> heartbeatEvents() {
+        return Flux
+                .fromStream(Stream.generate(() -> "heartbeat@" + Instant.now()))
+                .delayElements(Duration.ofSeconds(10L));
     }
 
 }

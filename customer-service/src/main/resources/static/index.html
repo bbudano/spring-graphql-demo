@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Spring Graphql Demo</title>
+    <script type="text/javascript" src="https://unpkg.com/graphql-ws/umd/graphql-ws.js"></script>
+
+    <script>
+
+        class HeartbeatHandler {
+
+            constructor() {
+                this.client = graphqlWs.createClient({ url: 'ws://localhost:8080/graphql' })
+            }
+
+            subscribe(callback) {
+                const q = `
+                subscription {
+                    heartbeatEvents
+                }
+                `
+
+                this.client.subscribe({query: q},
+                    {
+                        next: (next) => {
+                                const result = next ['data']
+                                callback(result)
+                        },
+                        error: (err) => console.error('there is an error', err),
+                        complete: () => console.log('subscription is complete.'),
+                    },
+                );
+            }
+        }
+
+        window.addEventListener('load', async () => {
+            const heartbeatService = new HeartbeatHandler()
+            await heartbeatService.subscribe((event) => {
+                console.log(event)
+            })
+        })
+
+    </script>
+</head>
+<body>
+    <div>
+        <h1>Spring for GraphQL Demo</h1>
+        <p>Open console to see heartbeats</p>
+    </div>
+</body>
+</html>
