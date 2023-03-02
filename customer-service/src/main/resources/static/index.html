@@ -16,14 +16,17 @@
             subscribe(callback) {
                 const q = `
                 subscription {
-                    heartbeatEvents
+                    heartbeatEvents {
+                        content
+                        timestamp
+                    }
                 }
                 `
 
                 this.client.subscribe({query: q},
                     {
                         next: (next) => {
-                                const result = next ['data']
+                                const result = JSON.stringify(next['data'])
                                 callback(result)
                         },
                         error: (err) => console.error('there is an error', err),
@@ -45,7 +48,7 @@
 <body>
     <div>
         <h1>Spring for GraphQL Demo</h1>
-        <p>Open console to see heartbeats</p>
+        <p>Open console to view heartbeats</p>
     </div>
 </body>
 </html>

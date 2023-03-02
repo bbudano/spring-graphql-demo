@@ -2,6 +2,7 @@ package hr.bbudano.customerservice.customer.controller;
 
 import hr.bbudano.customerservice.customer.entity.Customer;
 import hr.bbudano.customerservice.customer.service.CustomerService;
+import hr.bbudano.customerservice.dto.HeartbeatEvent;
 import hr.bbudano.customerservice.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.*;
@@ -80,9 +81,9 @@ public class CustomerController {
     }
 
     @SubscriptionMapping
-    Flux<String> heartbeatEvents() {
+    Flux<HeartbeatEvent> heartbeatEvents() {
         return Flux
-                .fromStream(Stream.generate(() -> "heartbeat@" + Instant.now()))
+                .fromStream(Stream.generate(() -> new HeartbeatEvent("heartbeat", Instant.now().toString())))
                 .delayElements(Duration.ofSeconds(10L));
     }
 
