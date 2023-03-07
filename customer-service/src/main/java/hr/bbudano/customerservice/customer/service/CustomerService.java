@@ -9,6 +9,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -48,7 +53,25 @@ public class CustomerService {
                 .thenReturn(id);
     }
 
-    public Flux<OrderDto> getCustomerOrders(Customer customer) {
+    public Mono<Map<Customer, List<OrderDto>>> getCustomerOrdersMap(List<Customer> customers) {
+        return Flux.fromIterable(customers)
+                .flatMap(this::getOrdersByCustomer)
+                .collectList()
+                .map(orders -> {
+                    Map<Integer, List<OrderDto>> groupedOrders = orders
+                            .stream()
+                            .collect(Collectors.groupingBy(OrderDto::customerId));
+
+                    return customers
+                            .stream()
+                            .collect(Collectors.toMap(team -> team,
+                                    team -> groupedOrders.containsKey(team.getId()) ?
+                                            groupedOrders.get(team.getId()) :
+                                            new ArrayList<>()));
+                });
+    }
+
+    private Flux<OrderDto> getOrdersByCustomer(Customer customer) {
         return webClient
                 .get()
                 .uri("/api/v1/orders?customerId=" + customer.getId())

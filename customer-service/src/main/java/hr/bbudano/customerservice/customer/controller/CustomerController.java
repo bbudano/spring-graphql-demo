@@ -15,7 +15,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Controller
@@ -64,20 +63,7 @@ public class CustomerController {
 
     @BatchMapping
     Mono<Map<Customer, List<OrderDto>>> orders(List<Customer> customers) {
-        var customersOrders = Flux.fromStream(customers
-                .stream()
-                .map(customerService::getCustomerOrders))
-                .flatMap(orders -> orders);
-
-        return customersOrders.collectList()
-                .map(orders -> {
-                    Map<Integer, List<OrderDto>> collect = orders.stream()
-                            .collect(Collectors.groupingBy(OrderDto::customerId));
-
-                    return customers.stream()
-                            .collect(Collectors.toMap(customer -> customer,
-                                    customer -> collect.get(customer.getId())));
-                });
+        return customerService.getCustomerOrdersMap(customers);
     }
 
     @SubscriptionMapping
