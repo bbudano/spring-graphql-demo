@@ -1,10 +1,12 @@
 package hr.bbudano.orderservice;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/orders")
@@ -16,9 +18,11 @@ public class OrderDataController {
         this.orderDataRepository = orderDataRepository;
     }
 
-    @GetMapping
-    Flux<OrderData> getByCustomerId(@RequestParam Integer customerId) {
-        return orderDataRepository.getByCustomerId(customerId);
+    @PostMapping
+    Flux<OrderData> getByCustomers(@RequestBody List<Integer> customers) {
+        return Flux
+                .fromStream(customers.stream().map(orderDataRepository::getByCustomerId))
+                .flatMap(o -> o);
     }
 
 }

@@ -54,8 +54,12 @@ public class CustomerService {
     }
 
     public Mono<Map<Customer, List<OrderDto>>> getCustomerOrdersMap(List<Customer> customers) {
-        return Flux.fromIterable(customers)
-                .flatMap(this::getOrdersByCustomer)
+        var customerIds = customers
+                .stream()
+                .map(Customer::getId)
+                .toList();
+
+        return getOrdersByCustomerList(customerIds)
                 .collectList()
                 .map(orders -> {
                     Map<Integer, List<OrderDto>> groupedOrders = orders
@@ -71,10 +75,11 @@ public class CustomerService {
                 });
     }
 
-    private Flux<OrderDto> getOrdersByCustomer(Customer customer) {
+    public Flux<OrderDto> getOrdersByCustomerList(List<Integer> customers) {
         return webClient
-                .get()
-                .uri("/api/v1/orders?customerId=" + customer.getId())
+                .post()
+                .uri("/api/v1/orders")
+                .bodyValue(customers)
                 .retrieve()
                 .bodyToFlux(OrderDto.class);
     }
