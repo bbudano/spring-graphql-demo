@@ -10,10 +10,6 @@ type Mutation {
     deleteCustomer(id: ID): Int
 }
 
-type Subscription {
-    heartbeatEvents: HeartbeatEvent
-}
-
 type Customer {
     id: ID
     name: String
@@ -23,9 +19,4 @@ type Customer {
 type Order {
     id: ID
     customerId: ID
-}
-
-type HeartbeatEvent {
-    content: String
-    timestamp: String
 }

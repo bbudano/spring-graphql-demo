@@ -1,0 +1,8 @@
+type Subscription {
+    heartbeatEvents: HeartbeatEvent
+}
+
+type HeartbeatEvent {
+    content: String
+    timestamp: String
+}
