@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import java.util.List;
@@ -18,10 +20,15 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
-    MapReactiveUserDetailsService userDetailsService() {
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    MapReactiveUserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         var users = List.of(
-                User.withUsername("admin").password("{noop}admin").roles("ADMIN", "USER").build(),
-                User.withUsername("user").password("{noop}user").roles("USER").build()
+                User.withUsername("admin").password(passwordEncoder().encode("admin")).roles("ADMIN", "USER").build(),
+                User.withUsername("user").password(passwordEncoder().encode("user")).roles("USER").build()
         );
 
         return new MapReactiveUserDetailsService(users);
