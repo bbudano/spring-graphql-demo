@@ -1,37 +1,28 @@
 package hr.bbudano.customerservice.config;
 
+import hr.bbudano.customerservice.user.service.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import java.util.List;
-
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    MapReactiveUserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        var users = List.of(
-                User.withUsername("admin").password(passwordEncoder().encode("admin")).roles("ADMIN", "USER").build(),
-                User.withUsername("user").password(passwordEncoder().encode("user")).roles("USER").build()
-        );
-
-        return new MapReactiveUserDetailsService(users);
     }
 
     @Bean
