@@ -2,6 +2,7 @@ type Query {
     customers: [Customer]
     customersByName(name: String): [Customer]
     customerById(id: ID): Customer
+    me: User
 }
 
 type Mutation {
@@ -19,4 +20,9 @@ type Customer {
 type Order {
     id: ID
     customerId: ID
+}
+
+type User {
+    username: String
+    role: String
 }
