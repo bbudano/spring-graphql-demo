@@ -14,6 +14,7 @@ import java.util.Collections;
 public class User implements UserDetails {
 
     @Id
+    @Getter
     private Integer id;
 
     private String username;

@@ -23,6 +23,7 @@ type Order {
 }
 
 type User {
+    id: ID
     username: String
     role: String
 }
